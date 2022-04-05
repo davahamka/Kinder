@@ -12,7 +12,7 @@ interface AuthRepository {
 
     suspend fun setLogin(data: LoginRequest): LoginResponse
 
-    suspend fun setRegister(data: RegisterRequest): Flow<Resource<RegisterResponse>>
+    suspend fun setRegister(data: RegisterRequest): RegisterResponse
 
     suspend fun validateToken()
 }

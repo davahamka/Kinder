@@ -11,7 +11,7 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(
     val api: KinderApi
 ): UserRepository {
-    override suspend fun registerUser(user: RegisterRequest): Flow<Resource<RegisterResponse>> {
+    override suspend fun registerUser(user: RegisterRequest): RegisterResponse {
         return api.setRegister(user)
     }
 

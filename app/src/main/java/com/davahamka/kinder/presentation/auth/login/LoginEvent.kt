@@ -1,6 +1,5 @@
 package com.davahamka.kinder.presentation.auth.login
 
-import com.davahamka.kinder.presentation.auth.register.RegisterEvent
 
 sealed class LoginEvent {
     data class OnChangeEmail(val email: String) : LoginEvent()

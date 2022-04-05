@@ -20,15 +20,8 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun setLogin(data: LoginRequest): LoginResponse {
         return api.setLogin(data)
     }
-//
-//    override suspend fun setLogin(data: LoginRequest): Flow<Resource<LoginResponse>> = flow {
-//        emit(Resource.Loading(null))
-//        api.setLogin(data).collectLatest {
-//            emit(Resource.Success(data = it))
-//        }
-//    } as Flow<Resource<LoginResponse>>
 
-    override suspend fun setRegister(data: RegisterRequest): Flow<Resource<RegisterResponse>> {
+    override suspend fun setRegister(data: RegisterRequest): RegisterResponse {
         return api.setRegister(data)
     }
 

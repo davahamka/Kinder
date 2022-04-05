@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.internal.isLiveLiteralsEnabled
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,6 +63,9 @@ fun LoginScreen(
             )
 
 
+            if(viewModel.state.value.error.isNotEmpty()) {
+                Text(text = viewModel.state.value.error, color = Color.Red, modifier = Modifier.padding(bottom = 6.dp))
+            }
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.email,
@@ -119,6 +123,7 @@ fun LoginScreen(
 
             AuthenticationButton(
                 text = "Login",
+                isLoading = viewModel.state.value.isLoading,
                 onClick = { viewModel.onEvent(LoginEvent.OnSubmitLogin(cb={navController?.navigate(Screen.HomeScreen.withArgs())})) }
             )
 
@@ -144,12 +149,4 @@ fun LoginScreen(
         }
 
     }
-}
-
-@Preview
-@Composable
-fun LoginScreenPreview(){
-//    Scaffold {
-//        LoginScreen(navController = null, viewModel = null)
-//    }
 }

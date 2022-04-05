@@ -42,25 +42,39 @@ class LoginViewModel @Inject constructor(
                 event.cb()
             }
             is LoginEvent.OnSubmitLogin -> {
-                // TODO: Call API Login
-                _state.value.isLoading = true
-                Log.d("TES","LOGIN")
                 if(email.isEmpty() || password.isEmpty()) {
                     return
                 }
+
                 viewModelScope.launch {
                     try {
-//                        authUseCases.loginAuth(LoginRequest(email, password)).collectLatest {
-//                            Log.d("ddd", it.message ?: "login success"
-//                            )
-//                        }
-
+                        _state.value = _state.value.copy(
+                            isLoading = true,
+                        )
+                        val result = authUseCases.loginAuth(LoginRequest(email, password))
+                        if (!result.token.isNullOrEmpty() && !result.message.isNullOrEmpty()) {
+                            _state.value = _state.value.copy(
+                                isLoading = true,
+                                successMessage = result.message
+                            )
+                            event.cb()
+                        } else {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = "login failed"
+                            )
+                        }
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                        )
                     } catch (e: Exception) {
-                        Log.d("dww", e.message ?: "Error")
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            error = "user/password not found"
+                        )
                     }
 
                 }
-                event.cb()
             }
         }
     }

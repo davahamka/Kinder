@@ -17,37 +17,37 @@ interface KinderApi {
     @POST("auth/login")
     suspend fun setLogin(@Body data: LoginRequest): LoginResponse
 
-    @GET("/auth")
+    @GET("auth")
     suspend fun validateToken()
 
 
     // donate
-    @POST("/donate")
+    @POST("donate")
     suspend fun insertDonate()
 
-    @GET("/donate/:id")
+    @GET("donate/:id")
     suspend fun getDonateById()
 
-    @GET("/donate")
+    @GET("donate")
     suspend fun getAllDonate()
 
-    @PUT("/donate/:id")
+    @PUT("donate/:id")
     suspend fun updateDonate()
 
-    @POST("/predict")
+    @POST("predict")
     suspend fun predictImage()
 
 
     // user
-    @POST("/user/register")
-    suspend fun setRegister(@Body data: RegisterRequest): Flow<Resource<RegisterResponse>>
+    @POST("user/register")
+    suspend fun setRegister(@Body data: RegisterRequest): RegisterResponse
 
-    @POST("/user/:id")
+    @POST("user/:id")
     suspend fun updateUser(@Body s: String)
 
-    @DELETE("/user/:id")
+    @DELETE("user/:id")
     suspend fun deleteUser()
 
-    @GET("/user")
+    @GET("user")
     suspend fun getUserById()
 }

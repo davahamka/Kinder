@@ -15,12 +15,5 @@ class LoginAuth(
 ) {
     suspend operator fun invoke(loginRequest: LoginRequest): LoginResponse {
         return repository.setLogin(loginRequest)
-//        emit(DataState.loading())
-//        try {
-//            val response = repository.setLogin(loginRequest)
-//            emit(DataState.data(data = response))
-//        } catch (e: Exception) {
-//            emit(DataState.error(message = e.message ?: "Unknown Error"))
-//        }
     }
 }
