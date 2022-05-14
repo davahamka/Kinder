@@ -178,8 +178,8 @@ fun RegisterScreen(
 
             AuthenticationButton(
                 text = "Register",
-                onClick = { navController.navigate(Screen.UserPreferredScreen.route) },
-                isLoading = viewModel.state.value.isLoading
+                isLoading = viewModel.state.value.isLoading,
+                onClick = { viewModel.onEvent(RegisterEvent.OnSubmitRegister(cb={navController?.navigate(Screen.HomeScreen.withArgs())})) }
             )
 
             Spacer(modifier = Modifier.height(32.dp))

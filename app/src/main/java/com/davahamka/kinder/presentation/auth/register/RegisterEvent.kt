@@ -6,6 +6,6 @@ sealed class RegisterEvent {
     data class OnChangeEmail(val email: String): RegisterEvent()
     data class OnChangePhoneNumber(val phoneNumber: String): RegisterEvent()
     object OnTogglePrivacyPolicy: RegisterEvent()
-    object OnSubmitRegister: RegisterEvent()
+    data class OnSubmitRegister(val cb: ()-> Unit): RegisterEvent()
     data class NavigateToLogin(val cb: () -> Unit): RegisterEvent()
 }

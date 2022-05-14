@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCases: UserUseCases
+    private val userUseCases: UserUseCases
 ): ViewModel() {
 
     private val _state = mutableStateOf(RegisterState())
@@ -56,17 +56,28 @@ class RegisterViewModel @Inject constructor(
                 isConfirmPrivacyPolicy = !isConfirmPrivacyPolicy
             }
             is RegisterEvent.OnSubmitRegister -> {
-                Log.d("username", name)
-                viewModelScope.apply {
-                    _state.value = RegisterState(isLoading = true)
-                }
-                if (name.isBlank() || password.isBlank() || email.isBlank() || phoneNumber.isBlank()) {
-                    viewModelScope.launch {
-                        registerUseCases.registerUser(
-                            RegisterRequest(email = email, name = name, no_hp = phoneNumber, password = password)
+                viewModelScope.launch {
+                    _state.value = _state.value.copy(
+                        isLoading = true
+                    )
+                    val result = userUseCases.registerUser(
+                        RegisterRequest(
+                            name = name, no_hp = phoneNumber, password = password, email = email
+                        )
+                    )
+                    if (result.message == "Success") {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            successMessage = result.message
+                        )
+                        event.cb()
+
+                    } else {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            successMessage = "error"
                         )
                     }
-
                 }
             }
             is RegisterEvent.NavigateToLogin -> {

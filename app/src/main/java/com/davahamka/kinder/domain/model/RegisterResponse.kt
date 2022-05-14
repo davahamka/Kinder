@@ -1,5 +1,7 @@
 package com.davahamka.kinder.domain.model
 
 data class RegisterResponse(
-    val id: String
+    val data: User,
+    val message: String,
+    val token: String
 )
