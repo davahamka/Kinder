@@ -46,8 +46,6 @@ import com.davahamka.kinder.presentation.ui.component.TopBarDescription
 import com.davahamka.kinder.presentation.ui.theme.*
 import com.davahamka.kinder.static.NutritionSummaryDataStatic
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.mlkit.vision.objects.ObjectDetection
-import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 
 @Composable
 fun CameraScreen(modifier: Modifier = Modifier, navController: NavController, viewModel: DonateFormViewModel = hiltViewModel()) {

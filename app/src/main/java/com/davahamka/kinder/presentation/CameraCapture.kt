@@ -3,12 +3,16 @@ package com.davahamka.kinder.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
 import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -20,22 +24,31 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.override
 import androidx.core.content.ContextCompat
 import com.davahamka.kinder.ml.ObjectDetectorImageAnalyzer
 import com.davahamka.kinder.presentation.ui.component.TopBarDescription
 import com.davahamka.kinder.presentation.ui.theme.Green3
 import com.davahamka.kinder.presentation.ui.theme.PrimaryColor
+import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.objects.DetectedObject
 import com.google.mlkit.vision.objects.ObjectDetection
-import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
-import com.google.mlkit.vision.objects.defaults.PredefinedCategory
+import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,9 +66,27 @@ fun CameraCapture(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     onImageFile: (File) -> Unit = { }
 ) {
+
     val context = LocalContext.current
 
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+
+    val localModel = LocalModel.Builder()
+        .setAssetFilePath("object_detection.tflite")
+        .build()
+
+    val customObjectDetectorOptions = CustomObjectDetectorOptions.Builder(localModel)
+        .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
+        .enableClassification()
+        .setClassificationConfidenceThreshold(0.5f)
+        .setMaxPerObjectLabelCount(3)
+        .build()
+
+    val objectDetector = ObjectDetection.getClient(customObjectDetectorOptions)
+
+    var label by remember { mutableStateOf(" ")}
+    var boundaryPoint by remember { mutableStateOf(Rect(0,0,0,0)) }
+
 
     Permission(
         permission = Manifest.permission.CAMERA,
@@ -89,7 +120,7 @@ fun CameraCapture(
                             .build()
                     )
                 }
-                Box {
+                Box (modifier = Modifier.fillMaxSize()){
                     CameraPreview(
                         modifier = Modifier.fillMaxSize(),
                         onUseCase = {
@@ -97,20 +128,20 @@ fun CameraCapture(
                         }
                     )
 
-                    Column(modifier = Modifier.align(
-                        Alignment.Center
-                    )) {
-                        Text(text = "Good Condition", fontWeight = FontWeight.Bold, color = PrimaryColor, textAlign = TextAlign.Center, modifier =Modifier.padding(bottom = 2.dp))
-                        Box(
-                            modifier = Modifier
-                                .border(4.dp, color = PrimaryColor)
-                                .width(240.dp)
-                                .height(240.dp)
+                    Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
+                        var boundaryPaint = Paint()
+                        boundaryPaint.color = Color.Green
+                        boundaryPaint.strokeWidth = 10f
+                        boundaryPaint.style = PaintingStyle.Stroke
 
-                        ) {
+                        var textPaint = android.graphics.Paint()
+                        textPaint.color = android.graphics.Color.GREEN
+                        textPaint.style = android.graphics.Paint.Style.FILL
+                        textPaint.textSize = 40f
 
-                        }
-                    }
+                        drawContext.canvas.drawRect(boundaryPoint?.left?.toFloat(), boundaryPoint?.top?.toFloat(),boundaryPoint?.right?.toFloat(), boundaryPoint?.bottom?.toFloat(), boundaryPaint)
+                        drawContext.canvas.nativeCanvas.drawText(label, boundaryPoint?.centerX().toFloat(), boundaryPoint?.centerY().toFloat(), textPaint)
+                    })
 
                     Button(
                         colors = ButtonDefaults.buttonColors(
@@ -135,56 +166,44 @@ fun CameraCapture(
                         Text("Continue")
                     }
                 }
+
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetResolution(Size(1280, 720))
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+
+                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+                    val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+
+                    val image = imageProxy.image
+
+                    if (image != null) {
+                        val processImage = InputImage.fromMediaImage(image, rotationDegrees)
+
+                        objectDetector
+                            .process(processImage)
+                            .addOnSuccessListener { objects ->
+                                for(i in objects) {
+                                    Log.d("DAVA",i.labels.firstOrNull()?.text ?: "Undefined")
+                                    Log.d("DAVA",i.boundingBox.flattenToString() ?: "Undefined")
+                                    label = i.labels.firstOrNull()?.text ?: ""
+                                    boundaryPoint = i.boundingBox
+                                }
+                                imageProxy.close()
+                            }
+                            .addOnFailureListener {
+                                Log.d("ERR","err - ${it.message}")
+                                imageProxy.close()
+                            }
+                    }
+                }
+
+
                 LaunchedEffect(previewUseCase) {
 
-                    val options = ObjectDetectorOptions.Builder()
-                        .setDetectorMode(ObjectDetectorOptions.STREAM_MODE)
-                        .enableClassification()
-                        .build()
-
-                    val objectDetector = ObjectDetection.getClient(options)
 
 
 
-                    val imageAnalysis = ImageAnalysis.Builder()
-                        .setTargetResolution(Size(1280, 70))
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-
-
-
-                    imageAnalysis.setAnalyzer(cameraExecutor, ImageAnalysis.Analyzer {
-                        val mediaImage = it.image
-                        if (mediaImage != null) {
-
-                            val image = InputImage.fromMediaImage(mediaImage, it.imageInfo.rotationDegrees)
-
-                            objectDetector.process(image)
-                                .addOnSuccessListener { detectedObjects ->
-                                    Log.d("DO", detectedObjects.toString())
-                                    for (detectedObject in detectedObjects) {
-                                        val boundingBox = detectedObject.boundingBox
-                                        val trackingId = detectedObject.trackingId
-
-                                        for (label in detectedObject.labels) {
-                                            val text = label.text
-                                            if (PredefinedCategory.FOOD == text) {
-
-                                            }
-                                            val index = label.index
-                                            if (PredefinedCategory.FOOD_INDEX == index) {
-
-                                            }
-                                            val confidence = label.confidence
-                                            Log.d("ML_RESULT", text)
-                                            Log.d("ML_CONFIDENCE", confidence.toString())
-                                        }
-                                    }
-                                }.addOnFailureListener { e ->
-                                    Log.d("MLERR", e.message.toString())
-                                }
-                        }
-                    })
 
                     val cameraProvider = context.getCameraProvider()
                     try {
@@ -203,6 +222,7 @@ fun CameraCapture(
 }
 
 suspend fun ImageCapture.takePicture(executor: Executor): File {
+
     val photoFile = withContext(Dispatchers.IO) {
         kotlin.runCatching {
             File.createTempFile("image", "jpg")
