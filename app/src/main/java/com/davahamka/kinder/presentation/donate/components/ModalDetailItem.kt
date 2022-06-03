@@ -50,7 +50,7 @@ fun ModalDetailItem(navController: NavController) {
                 ) {
                     Column() {
                         AsyncImage(
-                            model = "https://res.cloudinary.com/dk0z4ums3/image/upload/v1616414949/attached_image/temukan-manfaat-buah-naga-yang-sarat-nutrisi.jpg",
+                            model = "https://media.istockphoto.com/photos/banana-bunch-picture-id173242750?b=1&k=20&m=173242750&s=170667a&w=0&h=oRhLWtbAiPOxFAWeo2xEeLzwmHHm8W1mtdNOS7Dddd4=",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -67,13 +67,13 @@ fun ModalDetailItem(navController: NavController) {
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.Top
                     ) {
-                        Text(text = "Fresh Dragon Fruit", color = Black1, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "Good Quality Banana", color = Black1, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(top = 4.dp)
                         ) {
                             Icon(imageVector = Icons.Filled.CalendarToday, contentDescription = null, modifier = Modifier.size(12.dp))
-                            Text(text = "25 Maret 20222", modifier = Modifier.padding(start = 6.dp), fontSize = 12.sp)
+                            Text(text = "4 Juni 2022", modifier = Modifier.padding(start = 6.dp), fontSize = 12.sp)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -105,7 +105,7 @@ fun ModalDetailItem(navController: NavController) {
                     ) {
                         Row() {
                             AsyncImage(
-                                model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaXrFMnQrS3cdGFTB-UpG-5qMGMQyybPu7xg&usqp=CAU",
+                                model = "https://assets.promediateknologi.com/crop/0x0:0x0/x/photo/2021/11/08/1843221673.jpg",
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -115,7 +115,7 @@ fun ModalDetailItem(navController: NavController) {
                             )
                             Spacer(modifier = Modifier.padding(start = 10.dp))
                             Column() {
-                                Text(text = "Billy Haffas", fontWeight = FontWeight.Bold)
+                                Text(text = "Dhimas", fontWeight = FontWeight.Bold)
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.padding(top = 4.dp)

@@ -130,12 +130,12 @@ fun CameraCapture(
 
                     Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
                         var boundaryPaint = Paint()
-                        boundaryPaint.color = Color.Red
+                        boundaryPaint.color = Color.Green
                         boundaryPaint.strokeWidth = 10f
                         boundaryPaint.style = PaintingStyle.Stroke
 
                         var textPaint = android.graphics.Paint()
-                        textPaint.color = android.graphics.Color.RED
+                        textPaint.color = android.graphics.Color.GREEN
                         textPaint.style = android.graphics.Paint.Style.FILL
                         textPaint.textSize = 40f
 
