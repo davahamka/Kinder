@@ -88,7 +88,7 @@ fun HomeScreen(navController: NavController) {
                                 .padding(top = 6.dp)
                         ) {
                             Column() {
-                                Text(color = White1, fontWeight = FontWeight.Medium, text = "Hi Miftah,", fontSize = 18.sp)
+                                Text(color = White1, fontWeight = FontWeight.Medium, text = "Hi Siti,", fontSize = 18.sp)
                                 Text(
                                     color = White1,
                                     text = "Find good things today",

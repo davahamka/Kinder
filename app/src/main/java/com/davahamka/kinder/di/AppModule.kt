@@ -2,15 +2,20 @@ package com.davahamka.kinder.di
 
 import com.davahamka.kinder.common.Constants
 import com.davahamka.kinder.data.api.KinderApi
+import com.davahamka.kinder.data.api.NutritionxApi
 import com.davahamka.kinder.data.repository.AuthRepositoryImpl
 import com.davahamka.kinder.data.repository.DonateRepositoryImpl
+import com.davahamka.kinder.data.repository.NutritionRepositoryImpl
 import com.davahamka.kinder.data.repository.UserRepositoryImpl
 import com.davahamka.kinder.domain.repository.AuthRepository
 import com.davahamka.kinder.domain.repository.DonateRepository
+import com.davahamka.kinder.domain.repository.NutritionRepository
 import com.davahamka.kinder.domain.repository.UserRepository
 import com.davahamka.kinder.domain.usecase.auth.AuthUseCases
 import com.davahamka.kinder.domain.usecase.auth.LoginAuth
 import com.davahamka.kinder.domain.usecase.auth.ValidateToken
+import com.davahamka.kinder.domain.usecase.nutrition.GetNutrients
+import com.davahamka.kinder.domain.usecase.nutrition.NutritionUseCases
 import com.davahamka.kinder.domain.usecase.user.*
 import dagger.Module
 import dagger.Provides
@@ -32,6 +37,16 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(KinderApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNutritionApi(): NutritionxApi {
+        return Retrofit.Builder()
+            .baseUrl(Constants.NUTRITIONX_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NutritionxApi::class.java)
     }
 
     @Provides
@@ -70,5 +85,19 @@ object AppModule {
     @Singleton
     fun provideDonateRepository(api: KinderApi): DonateRepository {
         return DonateRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNutritionRepository(api: NutritionxApi): NutritionRepository {
+        return NutritionRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNutritionUseCases(repository: NutritionRepository): NutritionUseCases {
+        return NutritionUseCases(
+            getNutrients = GetNutrients(repository)
+        )
     }
 }

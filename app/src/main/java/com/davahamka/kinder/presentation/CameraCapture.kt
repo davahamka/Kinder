@@ -64,7 +64,7 @@ import kotlin.coroutines.suspendCoroutine
 fun CameraCapture(
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
-    onImageFile: (File) -> Unit = { }
+    onImageFile: (File, value:String) -> Unit = { _, _ -> { } }
 ) {
 
     val context = LocalContext.current
@@ -72,7 +72,7 @@ fun CameraCapture(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     val localModel = LocalModel.Builder()
-        .setAssetFilePath("object_detection.tflite")
+        .setAssetFilePath("objectone.tflite")
         .build()
 
     val customObjectDetectorOptions = CustomObjectDetectorOptions.Builder(localModel)
@@ -130,12 +130,12 @@ fun CameraCapture(
 
                     Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
                         var boundaryPaint = Paint()
-                        boundaryPaint.color = Color.Green
+                        boundaryPaint.color = Color.Red
                         boundaryPaint.strokeWidth = 10f
                         boundaryPaint.style = PaintingStyle.Stroke
 
                         var textPaint = android.graphics.Paint()
-                        textPaint.color = android.graphics.Color.GREEN
+                        textPaint.color = android.graphics.Color.RED
                         textPaint.style = android.graphics.Paint.Style.FILL
                         textPaint.textSize = 40f
 
@@ -145,7 +145,7 @@ fun CameraCapture(
 
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = PrimaryColor,
+                            backgroundColor = Color.Gray,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(24.dp),
@@ -158,7 +158,7 @@ fun CameraCapture(
                         onClick = {
                             coroutineScope.launch {
                                 imageCaptureUseCase.takePicture(context.executor).let {
-                                    onImageFile(it)
+                                    onImageFile(it, label)
                                 }
                             }
                         }
@@ -184,8 +184,6 @@ fun CameraCapture(
                             .process(processImage)
                             .addOnSuccessListener { objects ->
                                 for(i in objects) {
-                                    Log.d("DAVA",i.labels.firstOrNull()?.text ?: "Undefined")
-                                    Log.d("DAVA",i.boundingBox.flattenToString() ?: "Undefined")
                                     label = i.labels.firstOrNull()?.text ?: ""
                                     boundaryPoint = i.boundingBox
                                 }
@@ -207,7 +205,6 @@ fun CameraCapture(
 
                     val cameraProvider = context.getCameraProvider()
                     try {
-                        // Must unbind the use-cases before rebinding them.
                         cameraProvider.unbindAll()
                         cameraProvider.bindToLifecycle(
                             lifecycleOwner, cameraSelector, imageAnalysis, previewUseCase, imageCaptureUseCase,
