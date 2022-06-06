@@ -15,7 +15,7 @@ fun ListItemNearest(navController: NavController) {
         modifier = Modifier.padding(bottom = 32.dp)
     ) {
         NearestDataStatic.dataCard.map {
-            ItemNearest(it, onClick = { navController.navigate(Screen.DonateDetailMapScreen.route)})
+            ItemNearest(it, onClick = { navController.navigate(Screen.DonateDetailMapScreen.route+"/false")})
         }
     }
 }

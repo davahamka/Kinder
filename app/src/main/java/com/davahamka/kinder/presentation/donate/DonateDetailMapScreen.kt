@@ -25,12 +25,13 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DonateDetailMapScreen(navController: NavController) {
-    val singapore =  LatLng(-7.9354264,112.6239592)
+fun DonateDetailMapScreen(navController: NavController, showDefault: String?) {
+    val singapore =  LatLng(-7.5692197,110.830672)
 
     val modalBottomSheetState = rememberModalBottomSheetState(
-        ModalBottomSheetValue.HalfExpanded
+        if(showDefault=="true") ModalBottomSheetValue.Hidden else ModalBottomSheetValue.HalfExpanded
     )
+
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -49,13 +50,19 @@ fun DonateDetailMapScreen(navController: NavController) {
 //                properties = MapProperties(isMyLocationEnabled = true),
             uiSettings = MapUiSettings(myLocationButtonEnabled = true)
         ) {
-
-            val iconMarker = BitmapDescriptorFactory.fromResource(R.drawable.icon_person_marker)
-            Marker(position = singapore, icon = iconMarker, onClick = {
-                coroutineScope.launch { modalBottomSheetState.show() }
-                Log.d("TEST","SINGA")
-                true
-            })
+            NearestDataStatic.dataCard.forEach {
+                val iconMarker = BitmapDescriptorFactory.fromResource(R.drawable.ic_food_loc)
+                Marker(
+                    position = it.position,
+                    title = it.name,
+                    icon = iconMarker,
+                    snippet = "Tes",
+                    onClick = {
+                        coroutineScope.launch { modalBottomSheetState.show() }
+                        true
+                    }
+                )
+            }
 
         }
     }

@@ -148,7 +148,7 @@ fun HomeScreen(navController: NavController) {
                             coroutineScope.launch { modalBottomSheetState.show() }
                         },
                         onClickReceive = {
-                           navController.navigate(Screen.DonateMapScreen.route)
+                           navController.navigate(Screen.DonateDetailMapScreen.route+"/true")
                         }
                     )
                     LevelCard(navController = navController)

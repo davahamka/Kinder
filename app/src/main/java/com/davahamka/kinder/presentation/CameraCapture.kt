@@ -145,7 +145,7 @@ fun CameraCapture(
 
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Gray,
+                            backgroundColor = PrimaryColor,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(24.dp),

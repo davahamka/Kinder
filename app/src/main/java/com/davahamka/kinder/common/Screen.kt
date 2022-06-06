@@ -29,6 +29,7 @@ sealed class Screen(val route: String) {
     object DescriptionFormScreen: Screen("description_form_screen")
     object DonateMapScreen: Screen("donate_map_screen")
     object DonateConfirmationScreen: Screen("donate_confirmation_screen")
+    object DonateConfirmationSecondScreen: Screen("donate_confirmation_second_screen")
     object DonateDetailMapScreen: Screen("donate_detail_map_screen")
     object DonateConfirmationReceiveScreen: Screen("donate_confirmation_receive_screen")
     object SendRateScreen: Screen("send_rate_screen")

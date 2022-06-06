@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.davahamka.kinder.presentation.SplashScreen
 import com.davahamka.kinder.presentation.account.AccountScreen
 import com.davahamka.kinder.presentation.auth.InformationScreen
@@ -87,8 +88,12 @@ fun Navigation() {
             DonateConfirmationScreen(navController = navController)
         }
 
-        composable(route = Screen.DonateDetailMapScreen.route) {
-            DonateDetailMapScreen(navController = navController)
+        composable(route = Screen.DonateConfirmationSecondScreen.route) {
+            DonateConfirmationSecondScreen(navController = navController)
+        }
+
+        composable(route = Screen.DonateDetailMapScreen.route+"/{default}") { backStackEntry ->
+            DonateDetailMapScreen(navController = navController, backStackEntry.arguments?.getString("default"))
         }
         
         composable(route = Screen.DonateConfirmationReceiveScreen.route) {

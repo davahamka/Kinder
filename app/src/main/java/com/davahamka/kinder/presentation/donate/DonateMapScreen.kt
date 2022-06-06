@@ -5,21 +5,28 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Eject
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.davahamka.kinder.R
+import com.davahamka.kinder.common.Screen
 import com.davahamka.kinder.dummy.DonateDummy
 import com.davahamka.kinder.presentation.Permission
 import com.davahamka.kinder.presentation.donate.components.ModalMethodSelection
 import com.davahamka.kinder.presentation.home.components.ModalBottomShare
 import com.davahamka.kinder.presentation.home.components.ModalDetailReceiver
+import com.davahamka.kinder.presentation.ui.theme.PrimaryColor
+import com.davahamka.kinder.static.NearestDataDonateStatic
 import com.davahamka.kinder.static.NearestDataStatic
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -72,37 +79,54 @@ fun DonateMapScreen(navController: NavHostController) {
                 }
             }
         ) {
+            Box(){
+                ModalBottomSheetLayout(
+                    sheetState = modalBottomSheetState,
+                    sheetContent = {
+                        ModalDetailReceiver(navController)
+                    }) {
+                    GoogleMap(
+                        modifier = Modifier.fillMaxSize(),
+                        cameraPositionState = cameraPositionState,
+                        properties = MapProperties(isMyLocationEnabled = true),
+                        uiSettings = MapUiSettings(myLocationButtonEnabled = true),
+                        onMapLoaded = {
 
-            ModalBottomSheetLayout(
-                sheetState = modalBottomSheetState,
-                sheetContent = {
-                    ModalDetailReceiver(navController)
-                }) {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    properties = MapProperties(isMyLocationEnabled = true),
-                    uiSettings = MapUiSettings(myLocationButtonEnabled = true),
-                    onMapLoaded = {
+                        }
+                    ) {
 
+                        NearestDataDonateStatic.dataCard.forEach {
+                            val iconMarker = BitmapDescriptorFactory.fromResource(R.drawable.ic_food_loc)
+                            Marker(
+                                position = it.position,
+                                title = it.name,
+                                icon = iconMarker,
+                                snippet = "Tes",
+                                onClick = {
+                                    coroutineScope.launch { modalBottomSheetState.show() }
+                                    true
+                                }
+                            )
+                        }
                     }
-                ) {
-
-                    NearestDataStatic.dataCard.forEach {
-                        val iconMarker = BitmapDescriptorFactory.fromResource(R.drawable.ic_food_loc)
-                        Marker(
-                            position = it.position,
-                            title = it.name,
-                            icon = iconMarker,
-                            snippet = "Tes",
-                            onClick = {
-                                coroutineScope.launch { modalBottomSheetState.show() }
-                                true
-                            }
-                        )
+                    Button( colors = ButtonDefaults.buttonColors(
+                        backgroundColor = PrimaryColor,
+                        contentColor = Color.White
+                    ),
+                        shape = RoundedCornerShape(24.dp),
+                        modifier = Modifier
+                            .width(280.dp)
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 42.dp)
+                        ,
+                        contentPadding = PaddingValues(vertical = 12.dp),
+                        onClick = {
+                          navController.navigate(Screen.DonateConfirmationSecondScreen.route)
+                    }) {
+                        Text(text = "Upload")
                     }
+            }
 
-                }
             }
         }
 
